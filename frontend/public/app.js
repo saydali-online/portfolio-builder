@@ -1,4 +1,4 @@
-const API = 'https://portfolio-builder-2-6499.onrender.com';
+const API_BASE = 'https://portfolio-builder-2-6499.onrender.com';
 const $ = (id) => document.getElementById(id);
 
 $('registerBtn').onclick = async () => {
