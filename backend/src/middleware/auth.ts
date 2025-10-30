@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { verify } from '../utils/jwt.js';
 
-export function authMiddleware(req: Request, res: Response, next: NextFunction) {
+/** Middleware to verify JWT and attach user payload */
+export function requireAuth(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: 'No token provided' });
 
