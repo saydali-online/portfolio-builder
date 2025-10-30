@@ -1,43 +1,36 @@
 import express from 'express';
-import helmet from 'helmet';
 import cors from 'cors';
+import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { env } from './env.js';
-import { auth } from './routes/auth.js';
-import { users } from './routes/users.js';
-import { portfolio } from './routes/portfolio.js';
-import { pub } from './routes/public.js';
-import { uploads } from './routes/uploads.js';
-import { errorHandler } from './middleware/error.js';
+import { ENV } from './env.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
-
 app.use(helmet());
-app.use(cors({ origin: env.CORS_ORIGIN, credentials: true }));
-app.use(morgan('dev'));
-app.use(express.json({ limit: '5mb' }));
+app.use(cors({ origin: '*', credentials: false }));
+app.use(express.json({ limit: '2mb' }));
 app.use(cookieParser());
-app.use('/uploads', express.static(path.resolve(env.UPLOAD_DIR)));
+app.use(morgan('dev'));
 
-app.get('/health', (_req, res) => res.json({ ok: true }));
-app.use('/auth', auth);
-app.use('/users', users);
-app.use('/portfolio', portfolio);
-app.use('/public', pub);
-app.use('/upload', uploads);
-
-// Serve static frontend files
-app.use(express.static(path.join(__dirname, '../../frontend/public')));
-
-// Catch-all for SPA routing
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../frontend/public/index.html'));
+// --- Health & basic routes ---
+app.get('/health', (_req, res) => res.json({ ok: true, env: ENV.NODE_ENV }));
+app.get('/api/public/:username', (req, res) => {
+  res.json({ username: req.params.username, profile: { about: 'Coming soon' }});
 });
 
-app.use(errorHandler);
+// --- Serve built frontend locally if ever needed ---
+app.use('/_static', express.static(path.join(__dirname, '..', '..', 'frontend', 'public')));
 
-app.listen(env.PORT, () => console.log(`API on http://localhost:${env.PORT}`));
+app.use((err: any, _req: any, res: any, _next: any) => {
+  console.error(err);
+  res.status(500).json({ error: 'Internal Server Error' });
+});
+
+app.listen(ENV.PORT, () => {
+  console.log(`API up on http://localhost:${ENV.PORT}`);
+});
