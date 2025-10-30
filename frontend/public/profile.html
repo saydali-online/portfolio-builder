@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Public Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <div class="max-w-3xl mx-auto p-6">
+    <div id="card" class="bg-white rounded-xl shadow p-6">
+      <h1 id="pFullName" class="text-2xl font-bold"></h1>
+      <p id="pSpecialization" class="text-slate-600"></p>
+      <p id="pBio" class="mt-4"></p>
+      <a id="pEmail" class="text-blue-600 underline mt-2 block"></a>
+    </div>
+  </div>
+  <script>
+    const API = localStorage.getItem('API_BASE') || 'http://localhost:8080';
+    const params = new URLSearchParams(location.search);
+    const handle = params.get('handle');
+    if(!handle){
+      document.getElementById('card').innerHTML = '<p class="text-red-600">Missing handle</p>';
+    } else {
+      fetch(`${API}/public/${handle}`).then(r=>r.json()).then(d=>{
+        if(d.error){ document.getElementById('card').innerHTML = '<p class="text-red-600">Not found</p>'; return; }
+        document.getElementById('pFullName').textContent = d.fullName;
+        document.getElementById('pSpecialization').textContent = d.specialization || '';
+        document.getElementById('pBio').textContent = d.bio || '';
+        document.getElementById('pEmail').textContent = d.email;
+        document.getElementById('pEmail').href = `mailto:${d.email}`;
+      });
+    }
+  </script>
+</body>
+</html>

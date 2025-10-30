@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SaydaliOnline – Portfolio Builder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4">Portfolio Builder</h1>
+
+    <section id="auth" class="bg-white p-4 rounded-xl shadow mb-6">
+      <h2 class="font-semibold mb-2">Register / Login</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <input id="regName" class="input" placeholder="Full Name" />
+          <input id="regEmail" class="input" placeholder="Email" />
+          <input id="regPass" class="input" type="password" placeholder="Password" />
+          <button id="registerBtn" class="btn">Register</button>
+        </div>
+        <div>
+          <input id="logEmail" class="input" placeholder="Email" />
+          <input id="logPass" class="input" type="password" placeholder="Password" />
+          <button id="loginBtn" class="btn">Login</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="builder" class="hidden bg-white p-4 rounded-xl shadow">
+      <h2 class="font-semibold mb-4">Edit Portfolio</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input id="handle" class="input" placeholder="Public Handle (e.g. hatem)" />
+        <select id="accountType" class="input">
+          <option value="FREE">Free</option>
+          <option value="PREMIUM">Premium</option>
+        </select>
+        <input id="fullName" class="input" placeholder="Full Name" />
+        <input id="email" class="input" placeholder="Public Email" />
+        <input id="specialization" class="input" placeholder="Specialization" />
+        <textarea id="bio" class="input" placeholder="Bio (AR/EN)" rows="4"></textarea>
+        <select id="visibility" class="input">
+          <option value="PUBLIC">Public</option>
+          <option value="PRIVATE">Private</option>
+        </select>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button id="saveBtn" class="btn">Save</button>
+        <a id="viewBtn" class="btn" target="_blank">View Public Profile</a>
+      </div>
+    </section>
+  </div>
+
+  <script src="./app.js"></script>
+  <style>
+    .input{ @apply w-full border rounded-lg px-3 py-2 bg-white; }
+    .btn{ @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700; }
+  </style>
+</body>
+</html>

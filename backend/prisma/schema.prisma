@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String
+  fullName  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  portfolio Portfolio?
+}
+
+model Portfolio {
+  id              String    @id @default(cuid())
+  ownerId         String    @unique
+  owner           User      @relation(fields: [ownerId], references: [id])
+  handle          String    @unique
+  accountType     String    @default("FREE")
+  fullName        String
+  email           String
+  specialization  String?
+  bio             String?
+  links           String    @default("[]")
+  languages       String    @default("[]")
+  avatarUrl       String?
+  coverUrl        String?
+  visibility      String    @default("PUBLIC")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}

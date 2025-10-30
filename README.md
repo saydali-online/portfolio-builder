@@ -112,4 +112,3 @@ const i18n = {
 - Add Services/Products repeaters (store JSON in `Portfolio.links` or new tables).
 - Add analytics events (page views per profile).
 - Add search page to discover public portfolios (filter by country/specialization).
-
