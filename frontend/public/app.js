@@ -1,4 +1,4 @@
-const API = localStorage.getItem('API_BASE') || 'http://localhost:8080';
+const API = 'https://portfolio-builder-2-6499.onrender.com';
 const $ = (id) => document.getElementById(id);
 
 $('registerBtn').onclick = async () => {
