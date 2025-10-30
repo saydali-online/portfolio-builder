@@ -1,28 +1,27 @@
 services:
+  # Backend (Node/Express + TS)
   - type: web
-    name: portfolio-builder
+    name: portfolio-backend
     env: node
+    rootDir: backend
+    buildCommand: npm ci && npm run build
+    startCommand: node dist/index.js
     plan: free
-    buildCommand: cd backend && npm install && npm run build
-    startCommand: cd backend && npm start
     envVars:
-      - key: PORT
-        value: 8080
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 5000
       - key: DATABASE_URL
-        value: file:./dev.db
+        value: file:./dev.db         # SQLite for quick demo; use Postgres in prod
       - key: JWT_SECRET
         generateValue: true
-      - key: CORS_ORIGIN
-        fromService:
-          type: web
-          name: portfolio-builder
-          property: url
-      - key: PUBLIC_BASE_URL
-        fromService:
-          type: web
-          name: portfolio-builder
-          property: url
-      - key: UPLOAD_DIR
-        value: ./uploads
+
+  # Frontend (serve /frontend/public)
+  - type: web
+    name: portfolio-frontend
+    env: node
+    rootDir: frontend
+    buildCommand: ""
+    startCommand: npx serve public --single --listen $PORT
+    plan: free
