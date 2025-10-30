@@ -1,11 +1,21 @@
 import fs from 'fs';
 import path from 'path';
-import { env } from '../env.js';
+import { ENV } from '../env.js';
 
-export function ensureUploadDir() {
-  if (!fs.existsSync(env.UPLOAD_DIR)) fs.mkdirSync(env.UPLOAD_DIR, { recursive: true });
-}
+export const uploadFile = (file: Express.Multer.File) => {
+  const uploadDir = path.join(process.cwd(), 'uploads');
 
-export function localPath(filename: string) {
-  return path.join(env.UPLOAD_DIR, filename);
-}
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+  const filePath = path.join(uploadDir, file.originalname);
+  fs.writeFileSync(filePath, file.buffer);
+
+  const baseUrl =
+    ENV.NODE_ENV === 'production'
+      ? 'https://your-render-domain.onrender.com'
+      : `http://localhost:${ENV.PORT}`;
+
+  return `${baseUrl}/uploads/${file.originalname}`;
+};
