@@ -1,14 +1,15 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload, Secret, SignOptions } from 'jsonwebtoken';
 import { ENV } from '../env.js';
 
-const SECRET = ENV.JWT_SECRET as string;
+const SECRET: Secret = ENV.JWT_SECRET || 'default-secret';
 
-/** Generate JWT */
+/** Sign a JWT token */
 export function sign(payload: object, expiresIn: string = '7d'): string {
-  return jwt.sign(payload, SECRET, { expiresIn });
+  const options: SignOptions = { expiresIn };
+  return jwt.sign(payload, SECRET, options);
 }
 
-/** Verify JWT */
+/** Verify a JWT token */
 export function verify(token: string): string | JwtPayload | null {
   try {
     return jwt.verify(token, SECRET);
