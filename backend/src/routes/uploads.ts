@@ -1,20 +1,18 @@
-import { Router } from 'express';
+import express from 'express';
 import multer from 'multer';
-import path from 'path';
-import { env } from '../env.js';
-import { ensureUploadDir, localPath } from '../services/upload.service.js';
+import { uploadFile } from '../services/upload.service.js';
 
-ensureUploadDir();
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, env.UPLOAD_DIR),
-  filename: (_req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '_'))
-});
+const router = express.Router();
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-export const uploads = Router();
+router.post('/', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
 
-uploads.post('/image', upload.single('file'), (req, res) => {
-  const file = req.file!;
-  const url = `${env.PUBLIC_BASE_URL}/uploads/${path.basename(localPath(file.filename))}`;
-  res.json({ url });
+  const fileUrl = uploadFile(req.file);
+  res.json({ url: fileUrl });
 });
+
+export default router;
