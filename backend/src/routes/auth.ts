@@ -1,37 +1,43 @@
-import { Router } from 'express';
-import { registerSchema, loginSchema } from '../utils/validators.js';
-import { createUser, findUserByEmail } from '../services/user.service.js';
+import express from 'express';
 import bcrypt from 'bcryptjs';
+import { prisma } from '../prisma.js';
 import { sign } from '../utils/jwt.js';
 
-export const auth = Router();
+const router = express.Router();
 
-auth.post('/register', async (req, res, next) => {
-  try {
-    const { email, password, fullName } = registerSchema.parse(req.body);
-    const existing = await findUserByEmail(email);
-    if (existing) return res.status(409).json({ error: 'Email exists' });
-    const user = await createUser(email, password, fullName);
-    const token = sign({ id: user.id });
-    res.cookie('token', token, { httpOnly: true, sameSite: 'lax' });
-    res.json({ id: user.id, email: user.email, fullName: user.fullName });
-  } catch (e) { next(e); }
+// Register new user
+router.post('/register', async (req, res) => {
+  const { email, password, name } = req.body;
+
+  const hashed = await bcrypt.hash(password, 10);
+  const user = await prisma.user.create({
+    data: { email, password: hashed, name }
+  });
+
+  const token = sign({ id: user.id, email: user.email });
+  res.json({
+    message: 'User registered successfully',
+    token,
+    user: { id: user.id, email: user.email, name: user.name }
+  });
 });
 
-auth.post('/login', async (req, res, next) => {
-  try {
-    const { email, password } = loginSchema.parse(req.body);
-    const user = await findUserByEmail(email);
-    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-    const ok = await bcrypt.compare(password, user.password);
-    if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
-    const token = sign({ id: user.id });
-    res.cookie('token', token, { httpOnly: true, sameSite: 'lax' });
-    res.json({ id: user.id, email: user.email, fullName: user.fullName });
-  } catch (e) { next(e); }
+// Login user
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) return res.status(404).json({ error: 'User not found' });
+
+  const valid = await bcrypt.compare(password, user.password);
+  if (!valid) return res.status(401).json({ error: 'Invalid password' });
+
+  const token = sign({ id: user.id, email: user.email });
+  res.json({
+    message: 'Login successful',
+    token,
+    user: { id: user.id, email: user.email, name: user.name }
+  });
 });
 
-auth.post('/logout', (req, res) => {
-  res.clearCookie('token');
-  res.json({ ok: true });
-});
+export default router;
