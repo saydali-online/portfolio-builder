@@ -6,31 +6,35 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { ENV } from './env.js';
+import uploadsRouter from './routes/uploads.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(helmet());
-app.use(cors({ origin: '*', credentials: false }));
+app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 
-// --- Health & basic routes ---
-app.get('/health', (_req, res) => res.json({ ok: true, env: ENV.NODE_ENV }));
-app.get('/api/public/:username', (req, res) => {
-  res.json({ username: req.params.username, profile: { about: 'Coming soon' }});
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
+// Routes
+app.use('/api/uploads', uploadsRouter);
+
+// Health check
+app.get('/health', (_req, res) => {
+  res.json({ ok: true, env: ENV.NODE_ENV });
 });
 
-// --- Serve built frontend locally if ever needed ---
-app.use('/_static', express.static(path.join(__dirname, '..', '..', 'frontend', 'public')));
-
+// Error handler
 app.use((err: any, _req: any, res: any, _next: any) => {
-  console.error(err);
+  console.error('Unhandled Error:', err);
   res.status(500).json({ error: 'Internal Server Error' });
 });
 
 app.listen(ENV.PORT, () => {
-  console.log(`API up on http://localhost:${ENV.PORT}`);
+  console.log(`✅ Server running on port ${ENV.PORT}`);
 });
