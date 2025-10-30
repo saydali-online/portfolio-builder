@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
     "build": "tsc -p .",
     "start": "node dist/index.js",
     "prisma": "prisma",
-    "postinstall": "prisma generate",
     "migrate:deploy": "prisma migrate deploy",
     "postinstall": "npm ci --include=dev --ignore-scripts"
   },
@@ -38,6 +40,5 @@
     "prisma": "^5.20.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
-  },
-  "engines": { "node": ">=20.0.0" }
+  }
 }
