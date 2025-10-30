@@ -1,11 +1,19 @@
-import { Router } from 'express';
+import express from 'express';
 import { prisma } from '../prisma.js';
-import { requireAuth } from '../middleware/auth.js';
 
-export const users = Router();
+const router = express.Router();
 
-users.get('/me', requireAuth, async (req, res) => {
-  const id = (req as any).userId as string;
-  const me = await prisma.user.findUnique({ where: { id }, select: { id: true, email: true, fullName: true } });
-  res.json(me);
+// Get user by ID
+router.get('/:id', async (req, res) => {
+  const userId = Number(req.params.id);
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, email: true, name: true, createdAt: true }
+  });
+
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  res.json(user);
 });
+
+export default router;
