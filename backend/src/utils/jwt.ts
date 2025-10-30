@@ -1,11 +1,14 @@
-import jwt, { SignOptions } from 'jsonwebtoken';
-import { env } from '../env.js';
+import jwt from 'jsonwebtoken';
+import { ENV } from '../env.js';
 
-export function sign(payload: object, expiresIn: string | number = '7d') {
-  const options: SignOptions = { expiresIn: expiresIn as any };
-  return jwt.sign(payload, env.JWT_SECRET, options);
+export function generateToken(payload: object, expiresIn = '7d') {
+  return jwt.sign(payload, ENV.JWT_SECRET, { expiresIn });
 }
 
-export function verify<T = any>(token: string) {
-  return jwt.verify(token, env.JWT_SECRET) as T;
+export function verifyToken(token: string) {
+  try {
+    return jwt.verify(token, ENV.JWT_SECRET);
+  } catch {
+    return null;
+  }
 }
