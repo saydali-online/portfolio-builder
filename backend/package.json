@@ -10,7 +10,7 @@
     "prisma": "prisma",
     "postinstall": "prisma generate",
     "migrate:deploy": "prisma migrate deploy",
-    "postinstall": "npm install --include=dev"
+    "postinstall": "npm ci --include=dev --ignore-scripts"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",
